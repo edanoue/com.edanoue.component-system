@@ -11,10 +11,7 @@ namespace Edanoue.ComponentSystemSamples
     public class SampleCollector : MonoBehaviour
     {
         // Awake で作成される Button の参照
-        private IButton? _button;
-
-        // GC に回収されないように Collector をキャッシュしておく
-        private IReadOnlyEdaFeatureCollector? _collector;
+        private Button? _button;
 
         private void Awake()
         {
@@ -22,18 +19,18 @@ namespace Edanoue.ComponentSystemSamples
             var monoBehaviourAccessor = GetComponents<IEdaFeatureAccessor>();
 
             // C# Native の IEdaFeatureAccessor 継承クラスを初期化する
-            var button = new Button();
-            _button = button;
+            _button = new Button();
             var nativeAccessor = new IEdaFeatureAccessor[]
             {
-                button
+                _button
             };
 
             // Collector に渡す IEdaFeatureAccessor の集合を作成する
             var allAccessor = monoBehaviourAccessor.Concat(nativeAccessor);
 
             // Collector を作成する
-            _collector = EdaFeatureCollector.Create(allAccessor);
+            // このタイミングで 各 Accessor に実装されている関数が呼ばれる 
+            EdaFeatureCollector.Create(allAccessor);
         }
 
         private void OnGUI()
