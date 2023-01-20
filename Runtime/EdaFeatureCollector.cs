@@ -1,7 +1,6 @@
 ﻿// Copyright Edanoue, Inc. All Rights Reserved.
 
 #nullable enable
-using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
@@ -9,26 +8,9 @@ namespace Edanoue.ComponentSystem
 {
     /// <summary>
     /// </summary>
-    public class EdaFeatureCollector : IEdaFeatureCollector
+    public sealed class EdaFeatureCollector : IEdaFeatureCollector
     {
         private readonly EdaComponentCollectorImplementation _impl = new();
-
-        void IDisposable.Dispose()
-        {
-            _impl.Dispose();
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        void IEdaFeatureCollector.AddComponent(IEdaFeatureAccessor featureAssessor)
-        {
-            _impl.AddComponent(this, featureAssessor);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        void IEdaFeatureCollector.OnRegisteredComponents()
-        {
-            _impl.OnRegisteredComponents(this);
-        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T? GetFeature<T>()
@@ -58,9 +40,9 @@ namespace Edanoue.ComponentSystem
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        void IWriteOnlyEdaFeatureCollector.AddFeature<T>(T item)
+        bool IWriteOnlyEdaFeatureCollector.AddFeature<T>(IEdaFeature feature)
         {
-            _impl.AddFeature(item);
+            return _impl.AddFeature<T>(feature);
         }
 
         /// <summary>
@@ -95,7 +77,7 @@ namespace Edanoue.ComponentSystem
             // 自身 に Component を追加する
             foreach (var component in accessor)
             {
-                _impl.AddComponent(this, component);
+                _impl.AddAccessor(this, component);
             }
 
             // Collection に登録完了を通知する

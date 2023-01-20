@@ -3,6 +3,7 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace Edanoue.ComponentSystem
 {
@@ -10,19 +11,19 @@ namespace Edanoue.ComponentSystem
     /// </summary>
     internal sealed class EdaComponentCollectorImplementation
     {
-        // 登録された Component のリスト
+        // 登録された Accessor のリスト
         private readonly HashSet<IEdaFeatureAccessor> _components = new();
 
-        // 登録された Feature の辞書
-        private readonly Dictionary<Type, List<IEdaFeature>> _features = new();
+        // 登録された IEdaFeature の辞書
+        private readonly Dictionary<Type, IFeaturePool> _features = new();
 
-        // コンポーネントを追加できるかどうかのフラグ
-        private bool _canAddComponent = true;
+        // Accessor を追加できるかどうかのフラグ
+        private bool _canAddAccessor = true;
 
-        public bool AddComponent(IEdaFeatureCollector collector, IEdaFeatureAccessor featureAssessor)
+        public bool AddAccessor(IEdaFeatureCollector collector, IEdaFeatureAccessor featureAssessor)
         {
-            // コンポーネントを追加できる状態で無いならばスキップする
-            if (!_canAddComponent)
+            // Accessor を追加できる状態で無いならばスキップする
+            if (!_canAddAccessor)
             {
                 return false;
             }
@@ -36,7 +37,7 @@ namespace Edanoue.ComponentSystem
             // 内部でキャッシュしておく
             _components.Add(featureAssessor);
 
-            // コンポーネント側に通知を送る
+            // Accessor からの Feature 登録を行う
             featureAssessor.AddFeatures(collector);
 
             return true;
@@ -46,7 +47,8 @@ namespace Edanoue.ComponentSystem
         /// </summary>
         public void OnRegisteredComponents(IEdaFeatureCollector collector)
         {
-            if (!_canAddComponent)
+            // Accessor を追加できる状態で無いならばスキップする
+            if (!_canAddAccessor)
             {
                 return;
             }
@@ -57,20 +59,23 @@ namespace Edanoue.ComponentSystem
                 component.GetFeatures(collector);
             }
 
-            _canAddComponent = false;
+            // これ以上の Accessor の追加を無効化する
+            _canAddAccessor = false;
         }
 
-        private void AddFeatureInternal(Type type, IEdaFeature feature)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void AddFeatureInternal<T>(T feature)
+            where T : IEdaFeature
         {
             try
             {
-                _features[type].Add(feature);
+                _features[typeof(T)].Add(feature);
             }
             // まだ辞書に登録されていなかった場合は作成して追加する
             catch (KeyNotFoundException)
             {
-                var list = new List<IEdaFeature> { feature };
-                _features.Add(type, list);
+                var pool = new FeaturePool<T>(feature);
+                _features.Add(typeof(T), pool);
             }
         }
 
@@ -78,42 +83,26 @@ namespace Edanoue.ComponentSystem
         /// </summary>
         /// <param name="feature"></param>
         /// <typeparam name="T"></typeparam>
-        public void AddFeature<T>(T feature)
+        public bool AddFeature<T>(IEdaFeature feature)
             where T : IEdaFeature
         {
-            var typeIEdaFeature = typeof(IEdaFeature);
             var inType = typeof(T);
+            var typeIEdaFeature = typeof(IEdaFeature);
 
             // IEdaFeature 自体が渡されたらスキップする
             if (inType == typeIEdaFeature)
             {
-                return;
+                return false;
             }
 
             // IEdaFeature 継承クラスが T に指定されたら単体の登録を行う
-            if (inType.IsInterface && typeIEdaFeature.IsAssignableFrom(inType))
+            if (feature is not T t)
             {
-                AddFeatureInternal(inType, feature);
-                return;
+                return false;
             }
 
-            // インターフェース以外が渡された場合は, 実装インタフェースのうち IEdaFeature を継承しているものをすべて登録する
-            foreach (var interfaceType in typeof(T).GetInterfaces())
-            {
-                // IEdaFeature そのものであればスキップ
-                if (interfaceType == typeof(IEdaFeature))
-                {
-                    continue;
-                }
-
-                // IEdaFeature を継承したインタフェースでなければスキップ
-                if (!typeof(IEdaFeature).IsAssignableFrom(interfaceType))
-                {
-                    continue;
-                }
-
-                AddFeatureInternal(interfaceType, feature);
-            }
+            AddFeatureInternal(t);
+            return true;
         }
 
         /// <summary>
@@ -125,7 +114,8 @@ namespace Edanoue.ComponentSystem
         {
             try
             {
-                return _features[typeof(T)][0] as T;
+                var pool = _features[typeof(T)];
+                return (pool as FeaturePool<T>)!.GetFirstFeature();
             }
             // 辞書に登録されていなかったとき
             catch (KeyNotFoundException)
@@ -141,13 +131,16 @@ namespace Edanoue.ComponentSystem
         public IEnumerable<T> GetFeatures<T>()
             where T : IEdaFeature
         {
-            var type = typeof(T);
-            if (_features.ContainsKey(type))
+            try
             {
-                return (IEnumerable<T>)_features[type];
+                var pool = _features[typeof(T)];
+                return (pool as FeaturePool<T>)!.GetAllFeatures();
             }
-
-            return Array.Empty<T>();
+            // 辞書に登録されていなかったとき
+            catch (KeyNotFoundException)
+            {
+                return Array.Empty<T>();
+            }
         }
 
         /// <summary>
@@ -160,7 +153,8 @@ namespace Edanoue.ComponentSystem
         {
             try
             {
-                feature = _features[typeof(T)][0] as T;
+                var pool = _features[typeof(T)];
+                feature = (pool as FeaturePool<T>)!.GetFirstFeature();
                 return true;
             }
             // 辞書に登録されていなかったとき
@@ -179,23 +173,18 @@ namespace Edanoue.ComponentSystem
         public bool TryGetFeatures<T>(out IEnumerable<T> features)
             where T : IEdaFeature
         {
-            var type = typeof(T);
-            if (_features.ContainsKey(type))
+            try
             {
-                features = (IEnumerable<T>)_features[type];
+                var pool = _features[typeof(T)];
+                features = (pool as FeaturePool<T>)!.GetAllFeatures();
                 return true;
             }
-
-            features = Array.Empty<T>();
-            return false;
-        }
-
-        /// <summary>
-        /// </summary>
-        public void Dispose()
-        {
-            _features.Clear();
-            _components.Clear();
+            // 辞書に登録されていなかったとき
+            catch (KeyNotFoundException)
+            {
+                features = Array.Empty<T>();
+                return false;
+            }
         }
     }
 }

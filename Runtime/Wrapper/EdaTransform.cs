@@ -20,11 +20,11 @@ namespace Edanoue.ComponentSystem.Wrapper
         public void SetWorldRotation(in Quaternion rotation);
 
         /// <summary>
-        ///     <para>Set the world space position and rotation of the Transform component.</para>
-        ///     <para>
-        ///         When setting both the position and rotation of a transform,
-        ///         calling this method is more efficient than assigning to position and rotation individually.
-        ///     </para>
+        /// <para>Set the world space position and rotation of the Transform component.</para>
+        /// <para>
+        /// When setting both the position and rotation of a transform,
+        /// calling this method is more efficient than assigning to position and rotation individually.
+        /// </para>
         /// </summary>
         /// <param name="position"></param>
         /// <param name="rotation"></param>
@@ -41,15 +41,15 @@ namespace Edanoue.ComponentSystem.Wrapper
         public void SetLocalRotation(in Quaternion rotation);
 
         /// <summary>
-        ///     <para>
-        ///         Sets the position and rotation of the Transform component in local space (i.e. relative to its parent
-        ///         transform).
-        ///     </para>
-        ///     <para>
-        ///         When setting both the position and rotation of a transform,
-        ///         calling this method is slightly more efficient than assigning to localPosition and localRotation individually.
-        ///     </para>
-        ///     <para>If the transform has no parent, then calling this is equivalent to calling SetPositionAndRotation.</para>
+        /// <para>
+        /// Sets the position and rotation of the Transform component in local space (i.e. relative to its parent
+        /// transform).
+        /// </para>
+        /// <para>
+        /// When setting both the position and rotation of a transform,
+        /// calling this method is slightly more efficient than assigning to localPosition and localRotation individually.
+        /// </para>
+        /// <para>If the transform has no parent, then calling this is equivalent to calling SetPositionAndRotation.</para>
         /// </summary>
         /// <param name="position"></param>
         /// <param name="rotation"></param>
