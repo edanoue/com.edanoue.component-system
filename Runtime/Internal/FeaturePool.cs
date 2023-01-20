@@ -11,7 +11,7 @@ namespace Edanoue.ComponentSystem
         public void Add(IEdaFeature feature);
     }
 
-    internal class FeaturePool<T> : IFeaturePool
+    internal sealed class FeaturePool<T> : IFeaturePool
         where T : IEdaFeature
     {
         private readonly List<T> _list;

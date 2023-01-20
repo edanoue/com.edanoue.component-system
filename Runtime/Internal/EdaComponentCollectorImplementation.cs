@@ -8,6 +8,15 @@ using System.Runtime.CompilerServices;
 namespace Edanoue.ComponentSystem
 {
     /// <summary>
+    /// (内部用)
+    /// </summary>
+    internal interface IEdaFeatureCollector :
+        IReadOnlyEdaFeatureCollector,
+        IWriteOnlyEdaFeatureCollector
+    {
+    }
+
+    /// <summary>
     /// </summary>
     internal sealed class EdaComponentCollectorImplementation
     {
