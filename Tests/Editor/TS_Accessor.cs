@@ -98,6 +98,23 @@ namespace Edanoue.ComponentSystem.Tests
             Assert.That(counter.GetCount(), Is.EqualTo(1));
         }
 
+        [Test]
+        [Category("Abnormal")]
+        public void 登録されていないFeatureにアクセス()
+        {
+            var button = new Button();
+            var collector = EdaFeatureCollector.Create(button);
+
+            // 登録されていない Feature にアクセスする
+            Assert.That(collector.GetFeature<IFeatureCounter>(), Is.Null);
+            Assert.That(collector.TryGetFeature<IFeatureCounter>(out _), Is.False);
+
+            // 複数版
+            var features = collector.GetFeatures<IFeatureCounter>();
+            Assert.That(features.Count(), Is.EqualTo(0));
+            Assert.That(collector.TryGetFeatures<IFeatureCounter>(out _), Is.False);
+        }
+
         private interface IFeatureButton : IEdaFeature
         {
             public void Push();
