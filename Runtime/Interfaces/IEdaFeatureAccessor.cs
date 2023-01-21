@@ -2,6 +2,9 @@
 
 #nullable enable
 
+using System;
+using System.Collections.Generic;
+
 namespace Edanoue.ComponentSystem
 {
     /// <summary>
@@ -15,13 +18,24 @@ namespace Edanoue.ComponentSystem
         /// <para>登録する Feature がなければ空の実装でよい.</para>
         /// </summary>
         /// <param name="collector">Feature の登録先となる <see cref="IWriteOnlyEdaFeatureCollector" /></param>
-        public void AddFeatures(IWriteOnlyEdaFeatureCollector collector);
+        protected internal void AddFeatures(IWriteOnlyEdaFeatureCollector collector);
 
         /// <summary>
         /// <para><see cref="EdaFeatureCollector" /> から他の <see cref="IEdaFeature" /> を参照する.</para>
         /// <para>参照する Feature がなければ空の実装でよい.</para>
         /// </summary>
         /// <param name="collector">Feature の参照元となる <see cref="IReadOnlyEdaFeatureCollector" /></param>
-        public void GetFeatures(IReadOnlyEdaFeatureCollector collector);
+        protected internal void GetFeatures(IReadOnlyEdaFeatureCollector collector);
+
+        /// <summary>
+        /// Collection 作成時に他の <see cref="IEdaFeatureAccessor" /> を宣言する
+        /// </summary>
+        /// <param name="accessor"></param>
+        /// <returns></returns>
+        protected internal bool IsRegisterOtherAccessor(out IEnumerable<IEdaFeatureAccessor> accessor)
+        {
+            accessor = Array.Empty<IEdaFeatureAccessor>();
+            return false;
+        }
     }
 }

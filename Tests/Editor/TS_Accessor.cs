@@ -99,6 +99,20 @@ namespace Edanoue.ComponentSystem.Tests
         }
 
         [Test]
+        [Category("Normal")]
+        public void 同じAccessorを登録することができるが一つしか登録されない()
+        {
+            var button = new Button();
+
+            // 同じ参照の Accessor を複数個登録する
+            var collector = EdaFeatureCollector.Create(button, button, button);
+
+            // 仮に Accessor が毎回登録されていたら, Feature も複数個登録されている
+            // 1回 しか登録されていないならば Feature の数も一つだけである
+            Assert.That(collector.GetFeatures<IFeatureButton>().Count(), Is.EqualTo(1));
+        }
+
+        [Test]
         [Category("Abnormal")]
         public void 登録されていないFeatureにアクセス()
         {
@@ -130,12 +144,12 @@ namespace Edanoue.ComponentSystem.Tests
         {
             private int _counter;
 
-            public void AddFeatures(IWriteOnlyEdaFeatureCollector collector)
+            void IEdaFeatureAccessor.AddFeatures(IWriteOnlyEdaFeatureCollector collector)
             {
                 collector.AddFeature<IFeatureCounter>(this);
             }
 
-            public void GetFeatures(IReadOnlyEdaFeatureCollector collector)
+            void IEdaFeatureAccessor.GetFeatures(IReadOnlyEdaFeatureCollector collector)
             {
                 var button = collector.GetFeature<IFeatureButton>();
                 if (button is not null)
@@ -152,12 +166,12 @@ namespace Edanoue.ComponentSystem.Tests
 
         private class Button : IEdaFeatureAccessor, IFeatureButton
         {
-            public void AddFeatures(IWriteOnlyEdaFeatureCollector collector)
+            void IEdaFeatureAccessor.AddFeatures(IWriteOnlyEdaFeatureCollector collector)
             {
                 collector.AddFeature<IFeatureButton>(this);
             }
 
-            public void GetFeatures(IReadOnlyEdaFeatureCollector collector)
+            void IEdaFeatureAccessor.GetFeatures(IReadOnlyEdaFeatureCollector collector)
             {
             }
 

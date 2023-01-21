@@ -54,6 +54,8 @@ namespace Edanoue.ComponentSystem
         {
             var collector = new EdaFeatureCollector();
             collector.RegisterComponents(accessor);
+            // Collection に登録完了を通知する
+            collector.OnEndRegister();
             return collector;
         }
 
@@ -66,7 +68,14 @@ namespace Edanoue.ComponentSystem
         {
             var collector = new EdaFeatureCollector();
             collector.RegisterComponents(accessor);
+            // Collection に登録完了を通知する
+            collector.OnEndRegister();
             return collector;
+        }
+
+        private void OnEndRegister()
+        {
+            _impl.OnRegisteredComponents(this);
         }
 
         /// <summary>
@@ -77,11 +86,18 @@ namespace Edanoue.ComponentSystem
             // 自身 に Component を追加する
             foreach (var component in accessor)
             {
-                _impl.AddAccessor(this, component);
-            }
+                // Accessor の追加に失敗したらスキップ
+                if (!_impl.AddAccessor(this, component))
+                {
+                    continue;
+                }
 
-            // Collection に登録完了を通知する
-            _impl.OnRegisteredComponents(this);
+                // 他の Accessor も登録するかの確認
+                if (component.IsRegisterOtherAccessor(out var otherAccessor))
+                {
+                    RegisterComponents(otherAccessor);
+                }
+            }
         }
     }
 }
