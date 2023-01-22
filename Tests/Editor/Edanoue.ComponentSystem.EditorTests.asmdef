@@ -1,6 +1,6 @@
 {
   "name": "Edanoue.ComponentSystem.EditorTests",
-  "rootNamespace": "",
+  "rootNamespace": "Edanoue.ComponentSystem.Tests",
   "references": [
     "GUID:8d8ee739918d8103ca66d0636d0d33a8"
   ],
