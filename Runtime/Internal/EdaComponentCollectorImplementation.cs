@@ -83,8 +83,7 @@ namespace Edanoue.ComponentSystem
             // まだ辞書に登録されていなかった場合は作成して追加する
             catch (KeyNotFoundException)
             {
-                var pool = new FeaturePool<T>(feature);
-                _features.Add(typeof(T), pool);
+                _features.Add(typeof(T), new FeaturePool<T>(feature));
             }
         }
 
@@ -119,12 +118,11 @@ namespace Edanoue.ComponentSystem
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         public T? GetFeature<T>()
-            where T : class, IEdaFeature
+            where T : IEdaFeature
         {
             try
             {
-                var pool = _features[typeof(T)];
-                return (pool as FeaturePool<T>)!.GetFirstFeature();
+                return ((FeaturePool<T>)_features[typeof(T)]).GetFirstFeature();
             }
             // 辞書に登録されていなかったとき
             catch (KeyNotFoundException)
@@ -142,8 +140,7 @@ namespace Edanoue.ComponentSystem
         {
             try
             {
-                var pool = _features[typeof(T)];
-                return (pool as FeaturePool<T>)!.GetAllFeatures();
+                return ((FeaturePool<T>)_features[typeof(T)]).GetAllFeatures();
             }
             // 辞書に登録されていなかったとき
             catch (KeyNotFoundException)
@@ -158,12 +155,11 @@ namespace Edanoue.ComponentSystem
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         public bool TryGetFeature<T>(out T? feature)
-            where T : class, IEdaFeature
+            where T : IEdaFeature
         {
             try
             {
-                var pool = _features[typeof(T)];
-                feature = (pool as FeaturePool<T>)!.GetFirstFeature();
+                feature = ((FeaturePool<T>)_features[typeof(T)]).GetFirstFeature();
                 return true;
             }
             // 辞書に登録されていなかったとき
@@ -184,8 +180,7 @@ namespace Edanoue.ComponentSystem
         {
             try
             {
-                var pool = _features[typeof(T)];
-                features = (pool as FeaturePool<T>)!.GetAllFeatures();
+                features = ((FeaturePool<T>)_features[typeof(T)]).GetAllFeatures();
                 return true;
             }
             // 辞書に登録されていなかったとき
