@@ -18,6 +18,6 @@ namespace Edanoue.ComponentSystem
         /// <para>省略した場合は item 引数自体の型に実装されているすべての <see cref="IEdaFeature" /> インタフェースでの登録が行われる.</para>
         /// </typeparam>
         public bool AddFeature<T>(IEdaFeature feature)
-            where T : IEdaFeature;
+            where T : class, IEdaFeature;
     }
 }

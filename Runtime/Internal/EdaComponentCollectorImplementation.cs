@@ -37,19 +37,17 @@ namespace Edanoue.ComponentSystem
                 return false;
             }
 
-            // すでに登録済みの Component であればスキップする
-            if (_components.Contains(featureAssessor))
+            // HashSet に追加することが出来たら
+            if (_components.Add(featureAssessor))
             {
-                return false;
+                // Accessor からの Feature 登録を行う
+                featureAssessor.AddFeatures(collector);
+
+                return true;
             }
 
-            // 内部でキャッシュしておく
-            _components.Add(featureAssessor);
-
-            // Accessor からの Feature 登録を行う
-            featureAssessor.AddFeatures(collector);
-
-            return true;
+            // 既に登録済みの場合は失敗
+            return false;
         }
 
         /// <summary>
@@ -74,7 +72,7 @@ namespace Edanoue.ComponentSystem
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void AddFeatureInternal<T>(T feature)
-            where T : IEdaFeature
+            where T : class, IEdaFeature
         {
             try
             {
@@ -92,7 +90,7 @@ namespace Edanoue.ComponentSystem
         /// <param name="feature"></param>
         /// <typeparam name="T"></typeparam>
         public bool AddFeature<T>(IEdaFeature feature)
-            where T : IEdaFeature
+            where T : class, IEdaFeature
         {
             var inType = typeof(T);
             var typeIEdaFeature = typeof(IEdaFeature);
