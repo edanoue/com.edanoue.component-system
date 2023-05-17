@@ -14,7 +14,7 @@ namespace Edanoue.ComponentSystem.Tests
         public void GetFeatureのテスト()
         {
             var button = new Button();
-            var collector = EdaFeatureCollectorInternal.Create(button);
+            var collector = EdaFeatureCollectionInternal.Create(button);
 
             // Feature の取得ができる
             var feature = collector.GetFeature<IFeatureButton>();
@@ -27,7 +27,7 @@ namespace Edanoue.ComponentSystem.Tests
         public void TryGetFeatureのテスト()
         {
             var button = new Button();
-            var collector = EdaFeatureCollectorInternal.Create(button);
+            var collector = EdaFeatureCollectionInternal.Create(button);
 
             // Feature の取得ができる
             var success = collector.TryGetFeature<IFeatureButton>(out var feature);
@@ -43,7 +43,7 @@ namespace Edanoue.ComponentSystem.Tests
             // 同じ Feature をもつインスタンスを複数個登録する
             var buttonA = new Button();
             var buttonB = new Button();
-            var collector = EdaFeatureCollectorInternal.Create(buttonA, buttonB);
+            var collector = EdaFeatureCollectionInternal.Create(buttonA, buttonB);
 
             // Feature の取得ができる
             // 単体取得版では最初に登録したものが取得できる
@@ -63,7 +63,7 @@ namespace Edanoue.ComponentSystem.Tests
         {
             var buttonA = new Button();
             var buttonB = new Button();
-            var collector = EdaFeatureCollectorInternal.Create(buttonA, buttonB);
+            var collector = EdaFeatureCollectionInternal.Create(buttonA, buttonB);
 
             // 複数取得, 2つの Feature が取得できている
             var featuresA = collector.GetFeatures<IFeatureButton>();
@@ -76,7 +76,7 @@ namespace Edanoue.ComponentSystem.Tests
         {
             var buttonA = new Button();
             var buttonB = new Button();
-            var collector = EdaFeatureCollectorInternal.Create(buttonA, buttonB);
+            var collector = EdaFeatureCollectionInternal.Create(buttonA, buttonB);
 
             // 複数取得(Try 版), 2つの Feature が取得できている
             var success = collector.TryGetFeatures<IFeatureButton>(out var featuresB);
@@ -90,7 +90,7 @@ namespace Edanoue.ComponentSystem.Tests
         {
             var button = new Button();
             var counter = new Counter();
-            EdaFeatureCollectorInternal.Create(button, counter);
+            EdaFeatureCollectionInternal.Create(button, counter);
 
             // ボタンを押すとカウンタが更新される
             Assert.That(counter.GetCount(), Is.EqualTo(0));
@@ -105,7 +105,7 @@ namespace Edanoue.ComponentSystem.Tests
             var button = new Button();
 
             // 同じ参照の Accessor を複数個登録する
-            var collector = EdaFeatureCollectorInternal.Create(button, button, button);
+            var collector = EdaFeatureCollectionInternal.Create(button, button, button);
 
             // 仮に Accessor が毎回登録されていたら, Feature も複数個登録されている
             // 1回 しか登録されていないならば Feature の数も一つだけである
@@ -117,7 +117,7 @@ namespace Edanoue.ComponentSystem.Tests
         public void 登録されていないFeatureにアクセス()
         {
             var button = new Button();
-            var collector = EdaFeatureCollectorInternal.Create(button);
+            var collector = EdaFeatureCollectionInternal.Create(button);
 
             // 登録されていない Feature にアクセスする
             Assert.That(collector.GetFeature<IFeatureCounter>(), Is.Null);
@@ -144,14 +144,14 @@ namespace Edanoue.ComponentSystem.Tests
         {
             private int _counter;
 
-            void IEdaFeatureAccessor.AddFeatures(IEdaFeatureRegister collector)
+            void IEdaFeatureAccessor.OnRegisterEdaFeatures(IEdaFeatureBuilder collector)
             {
-                collector.AddFeature<IFeatureCounter>(this);
+                collector.Register<IFeatureCounter>(this);
             }
 
-            void IEdaFeatureAccessor.GetFeatures(IEdaFeatureCollector collector)
+            void IEdaFeatureAccessor.GetFeatures(IEdaFeatureCollection collection)
             {
-                var button = collector.GetFeature<IFeatureButton>();
+                var button = collection.GetFeature<IFeatureButton>();
                 if (button is not null)
                 {
                     button.Pushed += () => { _counter++; };
@@ -166,12 +166,12 @@ namespace Edanoue.ComponentSystem.Tests
 
         private class Button : IEdaFeatureAccessor, IFeatureButton
         {
-            void IEdaFeatureAccessor.AddFeatures(IEdaFeatureRegister collector)
+            void IEdaFeatureAccessor.OnRegisterEdaFeatures(IEdaFeatureBuilder collector)
             {
-                collector.AddFeature<IFeatureButton>(this);
+                collector.Register<IFeatureButton>(this);
             }
 
-            void IEdaFeatureAccessor.GetFeatures(IEdaFeatureCollector collector)
+            void IEdaFeatureAccessor.GetFeatures(IEdaFeatureCollection collection)
             {
             }
 

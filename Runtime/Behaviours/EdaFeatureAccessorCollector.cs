@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Edanoue.ComponentSystem
 {
-    public class EdaFeatureAccessorCollector : MonoBehaviour
+    internal sealed class EdaFeatureAccessorCollector : MonoBehaviour
     {
         [SerializeField]
         private Target m_collectTarget;
@@ -18,13 +18,13 @@ namespace Edanoue.ComponentSystem
                 case Target.SiblingOnly:
                 {
                     var mbAccessor = GetComponents<IEdaFeatureAccessor>();
-                    EdaFeatureCollectorInternal.Create(mbAccessor);
+                    EdaFeatureCollectionInternal.Create(mbAccessor);
                     break;
                 }
                 case Target.AllDescendants:
                 {
                     var mbAccessor = GetComponentsInChildren<IEdaFeatureAccessor>();
-                    EdaFeatureCollectorInternal.Create(mbAccessor);
+                    EdaFeatureCollectionInternal.Create(mbAccessor);
                     break;
                 }
                 default:
