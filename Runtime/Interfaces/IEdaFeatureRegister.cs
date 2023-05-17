@@ -7,7 +7,7 @@ namespace Edanoue.ComponentSystem
     /// <para>書き込み専用の EdaFeatureCollector</para>
     /// <para>Accessor 側から <see cref="IEdaFeature" /> の登録を行う</para>
     /// </summary>
-    public interface IWriteOnlyEdaFeatureCollector
+    public interface IEdaFeatureRegister
     {
         /// <summary>
         /// Collector に対して Feature の登録を行う.

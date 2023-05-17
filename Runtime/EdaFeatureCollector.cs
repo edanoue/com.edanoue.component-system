@@ -8,7 +8,7 @@ namespace Edanoue.ComponentSystem
 {
     /// <summary>
     /// </summary>
-    public sealed class EdaFeatureCollector : IEdaFeatureCollector
+    public sealed class EdaFeatureCollectorInternal : IEdaFeatureCollectorInternal
     {
         private readonly EdaComponentCollectorImplementation _impl = new();
 
@@ -34,13 +34,13 @@ namespace Edanoue.ComponentSystem
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        bool IReadOnlyEdaFeatureCollector.TryGetFeatures<T>(out IEnumerable<T> features)
+        bool IEdaFeatureCollector.TryGetFeatures<T>(out IEnumerable<T> features)
         {
             return _impl.TryGetFeatures(out features);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        bool IWriteOnlyEdaFeatureCollector.AddFeature<T>(IEdaFeature feature)
+        bool IEdaFeatureRegister.AddFeature<T>(IEdaFeature feature)
         {
             return _impl.AddFeature<T>(feature);
         }
@@ -50,9 +50,9 @@ namespace Edanoue.ComponentSystem
         /// </summary>
         /// <param name="accessor">collector に含める assessor のリスト</param>
         /// <returns></returns>
-        public static IReadOnlyEdaFeatureCollector Create(IEnumerable<IEdaFeatureAccessor> accessor)
+        public static IEdaFeatureCollector Create(IEnumerable<IEdaFeatureAccessor> accessor)
         {
-            var collector = new EdaFeatureCollector();
+            var collector = new EdaFeatureCollectorInternal();
             collector.RegisterComponents(accessor);
             // Collection に登録完了を通知する
             collector.OnEndRegister();
@@ -64,9 +64,9 @@ namespace Edanoue.ComponentSystem
         /// </summary>
         /// <param name="accessor">collector に含める accessor のリスト</param>
         /// <returns></returns>
-        public static IReadOnlyEdaFeatureCollector Create(params IEdaFeatureAccessor[] accessor)
+        public static IEdaFeatureCollector Create(params IEdaFeatureAccessor[] accessor)
         {
-            var collector = new EdaFeatureCollector();
+            var collector = new EdaFeatureCollectorInternal();
             collector.RegisterComponents(accessor);
             // Collection に登録完了を通知する
             collector.OnEndRegister();

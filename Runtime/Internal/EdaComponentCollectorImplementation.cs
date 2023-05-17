@@ -10,9 +10,7 @@ namespace Edanoue.ComponentSystem
     /// <summary>
     /// (内部用)
     /// </summary>
-    internal interface IEdaFeatureCollector :
-        IReadOnlyEdaFeatureCollector,
-        IWriteOnlyEdaFeatureCollector
+    internal interface IEdaFeatureCollectorInternal : IEdaFeatureCollector, IEdaFeatureRegister
     {
     }
 
@@ -29,7 +27,7 @@ namespace Edanoue.ComponentSystem
         // Accessor を追加できるかどうかのフラグ
         private bool _canAddAccessor = true;
 
-        public bool AddAccessor(IEdaFeatureCollector collector, IEdaFeatureAccessor featureAssessor)
+        public bool AddAccessor(IEdaFeatureCollectorInternal collectorInternal, IEdaFeatureAccessor featureAssessor)
         {
             // Accessor を追加できる状態で無いならばスキップする
             if (!_canAddAccessor)
@@ -41,7 +39,7 @@ namespace Edanoue.ComponentSystem
             if (_components.Add(featureAssessor))
             {
                 // Accessor からの Feature 登録を行う
-                featureAssessor.AddFeatures(collector);
+                featureAssessor.AddFeatures(collectorInternal);
 
                 return true;
             }
@@ -52,7 +50,7 @@ namespace Edanoue.ComponentSystem
 
         /// <summary>
         /// </summary>
-        public void OnRegisteredComponents(IEdaFeatureCollector collector)
+        public void OnRegisteredComponents(IEdaFeatureCollectorInternal collectorInternal)
         {
             // Accessor を追加できる状態で無いならばスキップする
             if (!_canAddAccessor)
@@ -63,7 +61,7 @@ namespace Edanoue.ComponentSystem
             // 登録済みのコンポーネント全てに通知を送る
             foreach (var component in _components)
             {
-                component.GetFeatures(collector);
+                component.GetFeatures(collectorInternal);
             }
 
             // これ以上の Accessor の追加を無効化する

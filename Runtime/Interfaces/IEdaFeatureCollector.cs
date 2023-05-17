@@ -9,7 +9,7 @@ namespace Edanoue.ComponentSystem
     /// <para>読み取り専用の EdaFeatureCollector</para>
     /// <para>登録されている <see cref="IEdaFeature" /> の取得を行う</para>
     /// </summary>
-    public interface IReadOnlyEdaFeatureCollector
+    public interface IEdaFeatureCollector
     {
         /// <summary>
         /// Collector から指定した Feature を取得する. 同じ Feature が複数個登録されている場合は最初に登録されていたものを返す.
