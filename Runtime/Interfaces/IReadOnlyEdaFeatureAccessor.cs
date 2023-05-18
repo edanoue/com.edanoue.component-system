@@ -5,7 +5,7 @@
 namespace Edanoue.ComponentSystem
 {
     /// <summary>
-    /// <para><see cref="EdaFeatureCollectionInternal" /> に所属することができるアクセサーに求められるインタフェース.</para>
+    /// <para><see cref="EdaFeatureCollector" /> に所属することができるアクセサーに求められるインタフェース.</para>
     /// <para>Feature の登録のみが可能</para>
     /// </summary>
     public interface IReadOnlyEdaFeatureAccessor : IEdaFeatureAccessor

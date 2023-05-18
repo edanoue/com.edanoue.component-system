@@ -8,7 +8,7 @@ namespace Edanoue.ComponentSystem
 {
     /// <summary>
     /// </summary>
-    public sealed class EdaFeatureCollectionInternal : IEdaFeatureCollectionInternal
+    public sealed class EdaFeatureCollector : IEdaFeatureCollectionInternal
     {
         private readonly EdaComponentCollectorImplementation _impl = new();
 
@@ -33,13 +33,11 @@ namespace Edanoue.ComponentSystem
             return _impl.TryGetFeature(out feature);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         bool IEdaFeatureCollection.TryGetFeatures<T>(out IEnumerable<T> features)
         {
             return _impl.TryGetFeatures(out features);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         bool IEdaFeatureBuilder.Register<T>(IEdaFeature feature)
         {
             return _impl.AddFeature<T>(feature);
@@ -52,7 +50,7 @@ namespace Edanoue.ComponentSystem
         /// <returns></returns>
         public static IEdaFeatureCollection Create(IEnumerable<IEdaFeatureAccessor> accessor)
         {
-            var collector = new EdaFeatureCollectionInternal();
+            var collector = new EdaFeatureCollector();
             collector.RegisterComponents(accessor);
             // Collection に登録完了を通知する
             collector.OnEndRegister();
@@ -66,7 +64,7 @@ namespace Edanoue.ComponentSystem
         /// <returns></returns>
         public static IEdaFeatureCollection Create(params IEdaFeatureAccessor[] accessor)
         {
-            var collector = new EdaFeatureCollectionInternal();
+            var collector = new EdaFeatureCollector();
             collector.RegisterComponents(accessor);
             // Collection に登録完了を通知する
             collector.OnEndRegister();

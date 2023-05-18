@@ -18,13 +18,13 @@ namespace Edanoue.ComponentSystem
                 case Target.SiblingOnly:
                 {
                     var mbAccessor = GetComponents<IEdaFeatureAccessor>();
-                    EdaFeatureCollectionInternal.Create(mbAccessor);
+                    EdaFeatureCollector.Create(mbAccessor);
                     break;
                 }
                 case Target.AllDescendants:
                 {
                     var mbAccessor = GetComponentsInChildren<IEdaFeatureAccessor>();
-                    EdaFeatureCollectionInternal.Create(mbAccessor);
+                    EdaFeatureCollector.Create(mbAccessor);
                     break;
                 }
                 default:
