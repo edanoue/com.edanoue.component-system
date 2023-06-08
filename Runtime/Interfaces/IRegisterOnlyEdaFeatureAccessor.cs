@@ -8,9 +8,9 @@ namespace Edanoue.ComponentSystem
     /// <para><see cref="EdaFeatureCollector" /> に所属することができるアクセサーに求められるインタフェース.</para>
     /// <para>Feature の登録のみが可能</para>
     /// </summary>
-    public interface IWriteOnlyEdaFeatureAccessor : IEdaFeatureAccessor
+    public interface IRegisterOnlyEdaFeatureAccessor : IEdaFeatureAccessor
     {
-        void IEdaFeatureAccessor.GetFeatures(IReadOnlyEdaFeatureCollector collector)
+        void IEdaFeatureAccessor.GetFeatures(IEdaFeatureCollection collection)
         {
             // (南) ここで明示的実装をしておくことで擬似的に GetFeature の実装の必要がない
             // みたいにしていますが, やろうと思ったら別にかけるのでビミョーです

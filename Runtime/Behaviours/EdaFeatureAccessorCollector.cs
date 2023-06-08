@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Edanoue.ComponentSystem
 {
-    public class EdaFeatureAccessorCollector : MonoBehaviour
+    internal sealed class EdaFeatureAccessorCollector : MonoBehaviour
     {
         [SerializeField]
         private Target m_collectTarget;

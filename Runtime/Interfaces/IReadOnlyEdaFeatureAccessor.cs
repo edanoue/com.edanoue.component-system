@@ -10,7 +10,7 @@ namespace Edanoue.ComponentSystem
     /// </summary>
     public interface IReadOnlyEdaFeatureAccessor : IEdaFeatureAccessor
     {
-        void IEdaFeatureAccessor.AddFeatures(IWriteOnlyEdaFeatureCollector collector)
+        void IEdaFeatureAccessor.OnRegisterEdaFeatures(IEdaFeatureBuilder builder)
         {
             // (南) ここで明示的実装をしておくことで擬似的に AddFeatures の実装の必要がない
             // みたいにしていますが, やろうと思ったら別にかけるのでビミョーです

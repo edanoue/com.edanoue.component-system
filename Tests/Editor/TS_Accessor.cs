@@ -144,14 +144,14 @@ namespace Edanoue.ComponentSystem.Tests
         {
             private int _counter;
 
-            void IEdaFeatureAccessor.AddFeatures(IWriteOnlyEdaFeatureCollector collector)
+            void IEdaFeatureAccessor.OnRegisterEdaFeatures(IEdaFeatureBuilder collector)
             {
-                collector.AddFeature<IFeatureCounter>(this);
+                collector.Register<IFeatureCounter>(this);
             }
 
-            void IEdaFeatureAccessor.GetFeatures(IReadOnlyEdaFeatureCollector collector)
+            void IEdaFeatureAccessor.GetFeatures(IEdaFeatureCollection collection)
             {
-                var button = collector.GetFeature<IFeatureButton>();
+                var button = collection.GetFeature<IFeatureButton>();
                 if (button is not null)
                 {
                     button.Pushed += () => { _counter++; };
@@ -166,12 +166,12 @@ namespace Edanoue.ComponentSystem.Tests
 
         private class Button : IEdaFeatureAccessor, IFeatureButton
         {
-            void IEdaFeatureAccessor.AddFeatures(IWriteOnlyEdaFeatureCollector collector)
+            void IEdaFeatureAccessor.OnRegisterEdaFeatures(IEdaFeatureBuilder collector)
             {
-                collector.AddFeature<IFeatureButton>(this);
+                collector.Register<IFeatureButton>(this);
             }
 
-            void IEdaFeatureAccessor.GetFeatures(IReadOnlyEdaFeatureCollector collector)
+            void IEdaFeatureAccessor.GetFeatures(IEdaFeatureCollection collection)
             {
             }
 

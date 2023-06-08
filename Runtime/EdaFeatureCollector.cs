@@ -8,7 +8,7 @@ namespace Edanoue.ComponentSystem
 {
     /// <summary>
     /// </summary>
-    public sealed class EdaFeatureCollector : IEdaFeatureCollector
+    public sealed class EdaFeatureCollector : IEdaFeatureCollectionInternal
     {
         private readonly EdaComponentCollectorImplementation _impl = new();
 
@@ -33,14 +33,12 @@ namespace Edanoue.ComponentSystem
             return _impl.TryGetFeature(out feature);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        bool IReadOnlyEdaFeatureCollector.TryGetFeatures<T>(out IEnumerable<T> features)
+        bool IEdaFeatureCollection.TryGetFeatures<T>(out IEnumerable<T> features)
         {
             return _impl.TryGetFeatures(out features);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        bool IWriteOnlyEdaFeatureCollector.AddFeature<T>(IEdaFeature feature)
+        bool IEdaFeatureBuilder.Register<T>(IEdaFeature feature)
         {
             return _impl.AddFeature<T>(feature);
         }
@@ -50,7 +48,7 @@ namespace Edanoue.ComponentSystem
         /// </summary>
         /// <param name="accessor">collector に含める assessor のリスト</param>
         /// <returns></returns>
-        public static IReadOnlyEdaFeatureCollector Create(IEnumerable<IEdaFeatureAccessor> accessor)
+        public static IEdaFeatureCollection Create(IEnumerable<IEdaFeatureAccessor> accessor)
         {
             var collector = new EdaFeatureCollector();
             collector.RegisterComponents(accessor);
@@ -64,7 +62,7 @@ namespace Edanoue.ComponentSystem
         /// </summary>
         /// <param name="accessor">collector に含める accessor のリスト</param>
         /// <returns></returns>
-        public static IReadOnlyEdaFeatureCollector Create(params IEdaFeatureAccessor[] accessor)
+        public static IEdaFeatureCollection Create(params IEdaFeatureAccessor[] accessor)
         {
             var collector = new EdaFeatureCollector();
             collector.RegisterComponents(accessor);

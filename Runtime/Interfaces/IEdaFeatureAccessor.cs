@@ -17,15 +17,15 @@ namespace Edanoue.ComponentSystem
         /// <para><see cref="EdaFeatureCollector" /> に対して自身に関連する <see cref="IEdaFeature" /> の登録を行う.</para>
         /// <para>登録する Feature がなければ空の実装でよい.</para>
         /// </summary>
-        /// <param name="collector">Feature の登録先となる <see cref="IWriteOnlyEdaFeatureCollector" /></param>
-        protected internal void AddFeatures(IWriteOnlyEdaFeatureCollector collector);
+        /// <param name="builder">Feature の登録先となる <see cref="IEdaFeatureBuilder" /></param>
+        protected internal void OnRegisterEdaFeatures(IEdaFeatureBuilder builder);
 
         /// <summary>
         /// <para><see cref="EdaFeatureCollector" /> から他の <see cref="IEdaFeature" /> を参照する.</para>
         /// <para>参照する Feature がなければ空の実装でよい.</para>
         /// </summary>
-        /// <param name="collector">Feature の参照元となる <see cref="IReadOnlyEdaFeatureCollector" /></param>
-        protected internal void GetFeatures(IReadOnlyEdaFeatureCollector collector);
+        /// <param name="collection">Feature の参照元となる <see cref="IEdaFeatureCollection" /></param>
+        protected internal void GetFeatures(IEdaFeatureCollection collection);
 
         /// <summary>
         /// Collection 作成時に他の <see cref="IEdaFeatureAccessor" /> を宣言する
